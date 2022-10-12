@@ -1,9 +1,14 @@
 const express = require('express');
 const router = require("./router");
+const cors = require("cors");
+const dotenv = require("dotenv");
+
 const mongoose = require("mongoose");
 
-const dotenv = require("dotenv");
 dotenv.config();
+
+const PORT = process.env.SERVER_PORT || 8000;
+const app = express();
 
 mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
@@ -12,11 +17,15 @@ mongoose.connect(process.env.MONGODB_URL, {
     .then(() => {
         console.log("Connected to MongoDB");
     })
-    .catch(() => {})
+    .catch((err) => {
+        console.log(err)
+    })
 
-const PORT = process.env.SERVER_PORT;
 
-const app = express();
+app.use(cors());
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use(router);
 
