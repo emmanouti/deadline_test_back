@@ -2,9 +2,9 @@
   "name": "deadline_test_back",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -13,8 +13,10 @@
   "author": "emmanouti",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "mongodb": "^4.10.0",
     "mongoose": "^6.6.5"
   },
   "devDependencies": {
