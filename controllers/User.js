@@ -72,7 +72,7 @@ const loginUser = async (req, res) => {
                     expiresIn: "2h",
                 }
             );
-            res.status(200).json(user);
+            res.status(200).json(user.token);
         } else {
             res.status(400).send("Unauthorized");
         }
