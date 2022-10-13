@@ -54,6 +54,33 @@ const createUser = async (req, res) => {
     }
 };
 
+const loginUser = async (req, res) => {
+    try {
+        const {
+            email,
+            password
+        } = req.body;
+        if (!email || !password) {
+            res.status(400).send("Email and password required");
+        }
+        const user = await User.findOne({ email });
+        if (user && (await bcrypt.compare(password, user.password))) {
+            user.token = jwt.sign(
+                { user_id: user._id, email },
+                process.env.TOKEN_KEY,
+                {
+                    expiresIn: "2h",
+                }
+            );
+            res.status(200).json(user);
+        } else {
+            res.status(400).send("Unauthorized");
+        }
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 const updateUser = (req, res) => {
     User.findOneAndUpdate(
         {_id: req.params.userID},
@@ -87,6 +114,7 @@ const deleteUser = (req, res) => {
 module. exports = {
     getUsers,
     createUser,
+    loginUser,
     updateUser,
     deleteUser,
 };
