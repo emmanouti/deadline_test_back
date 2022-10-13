@@ -1,4 +1,7 @@
-const User = require("../model/User")
+require("dotenv").config();
+const User = require("../model/User");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 const getUsers = (req, res) => {
     User.find((err, users) => {
@@ -9,21 +12,46 @@ const getUsers = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
-    const user = new User({
-        pseudo: req.body.pseudo,
-        surname: req.body.surname,
-        name: req.body.name,
-        address: req.body.address,
-        email: req.body.email,
-        phone: req.body.phone,
-    })
-    user.save((err, user) => {
-        if (err) {
-            res.send(err);
+const createUser = async (req, res) => {
+    try {
+        const {
+            pseudo,
+            surname,
+            name,
+            address,
+            email,
+            phone,
+            password
+        } = req.body;
+        const oldUser = await User.findOne({ email });
+        if (oldUser) {
+            return res.status(409).send("User Already Exist. Please Login");
         }
-        res.json(user);
-    })
+        const oldPseudo = await User.findOne({pseudo});
+        if (oldPseudo) {
+            return res.status(409).send("Pseudo already used. Please find another one.")
+        }
+        const encryptedPassword = await bcrypt.hash(password, 10);
+        const user = await User.create({
+            pseudo,
+            surname,
+            name,
+            address,
+            email,
+            phone,
+            password: encryptedPassword,
+        });
+        user.token = jwt.sign(
+            {user_id: user._id, email},
+            process.env.TOKEN_KEY,
+            {
+                expiresIn: "2h",
+            }
+        );
+        res.status(201).json(user);
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const updateUser = (req, res) => {

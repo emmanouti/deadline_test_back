@@ -4,7 +4,7 @@ router.get("/", (req, res) => {
     res.send("Router ok");
 });
 router.get("/users", getUsers);
-router.post("/user", createUser)
+router.post("/newUser", createUser)
 router.put("/user/:userID", updateUser);
 router.delete("/user/:userID", deleteUser);
 
