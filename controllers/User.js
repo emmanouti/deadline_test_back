@@ -3,13 +3,14 @@ const User = require("../model/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-const getUsers = (req, res) => {
-    User.find((err, users) => {
-        if (err) {
-            res.send(err);
-        }
-        res.json(users);
-    });
+const getUser = async (req, res) => {
+    const user_id = req.params.userID;
+    const user = await User.findOne({_id: user_id})
+    if (user) {
+        res.json(user);
+    } else {
+        res.send("no user found")
+    }
 };
 
 const createUser = async (req, res) => {
@@ -50,7 +51,7 @@ const createUser = async (req, res) => {
         );
         res.status(201).json(user);
     } catch (err) {
-        console.log(err);
+        res.send(err);
     }
 };
 
@@ -85,12 +86,8 @@ const updateUser = (req, res) => {
     User.findOneAndUpdate(
         {_id: req.params.userID},
         {$set: {
-                pseudo: req.body.pseudo,
-                surname: req.body.surname,
-                name: req.body.name,
                 address: req.body.address,
                 email: req.body.email,
-                phone: req.body.phone,
             },
         },
         {new: true},
@@ -112,7 +109,7 @@ const deleteUser = (req, res) => {
 
 
 module. exports = {
-    getUsers,
+    getUser,
     createUser,
     loginUser,
     updateUser,
