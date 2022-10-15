@@ -13,6 +13,15 @@ const getUser = async (req, res) => {
     }
 };
 
+const getUsers = (req, res) => {
+    User.find((err, users) => {
+        if (err) {
+            res.send(err);
+        }
+        res.json(users);
+    });
+};
+
 const createUser = async (req, res) => {
     try {
         const {
@@ -42,14 +51,15 @@ const createUser = async (req, res) => {
             phone,
             password: encryptedPassword,
         });
-        user.token = jwt.sign(
+        const data = {user}
+        data["token"] = user.token = jwt.sign(
             {user_id: user._id, email},
             process.env.TOKEN_KEY,
             {
                 expiresIn: "2h",
             }
         );
-        res.status(201).json(user);
+        res.status(201).json(data);
     } catch (err) {
         res.send(err);
     }
@@ -66,19 +76,20 @@ const loginUser = async (req, res) => {
         }
         const user = await User.findOne({ email });
         if (user && (await bcrypt.compare(password, user.password))) {
-            user.token = jwt.sign(
+            const data = {user}
+            data["token"] = user.token = jwt.sign(
                 { user_id: user._id, email },
                 process.env.TOKEN_KEY,
                 {
                     expiresIn: "2h",
                 }
             );
-            res.status(200).json(user.token);
+            res.status(200).json(data);
         } else {
             res.status(400).send("Unauthorized");
         }
     } catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -110,6 +121,7 @@ const deleteUser = (req, res) => {
 
 module. exports = {
     getUser,
+    getUsers,
     createUser,
     loginUser,
     updateUser,
