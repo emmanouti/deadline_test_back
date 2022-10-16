@@ -2,7 +2,7 @@
 
 ## Setup your server
 
-To install all dependencies run :
+First fork this project then to install all dependencies run :
 ### `npm install`
 
 Use the .env.sample to set up your preferred server port, a token key and the mongoDB url where your database is host with your login/password.
